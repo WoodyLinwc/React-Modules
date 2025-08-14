@@ -30,6 +30,7 @@ const Counters = () => {
         <div>
             <h2>Counters</h2>
             <button onClick={resetAll}>Reset All</button>
+            {/* Object.entries() returns an array of arrays, [["Counter 1", 0], ["counter2", 5]] */}
             {Object.entries(counts).map(([counter, count]) => (
                 <div key={counter}>
                     <p>
