@@ -8,17 +8,19 @@ function App() {
     return (
         <div className="App">
             <nav>
-                <ul>
-                    <li>
-                        <NavLink to="/">Home</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/counter">Counter</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/fetch-api">FetchAPI</NavLink>
-                    </li>
-                </ul>
+                <div className="navigation">
+                    <ul>
+                        <li>
+                            <NavLink to="/">Home</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/counter">Counter</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/fetch-api">FetchAPI</NavLink>
+                        </li>
+                    </ul>
+                </div>
             </nav>
 
             <Routes>
