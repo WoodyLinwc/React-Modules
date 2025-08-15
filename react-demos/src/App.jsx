@@ -3,6 +3,7 @@ import { Route, Routes, NavLink } from "react-router-dom";
 import Counter from "./pages/Counter";
 import FetchAPI from "./pages/FetchAPI";
 import Home from "./pages/Home";
+import TextArea from "./components/TextArea";
 
 function App() {
     return (
@@ -28,6 +29,8 @@ function App() {
                 <Route path="/counter" element={<Counter />}></Route>
                 <Route path="/fetch-api" element={<FetchAPI />}></Route>
             </Routes>
+
+            <TextArea />
         </div>
     );
 }
