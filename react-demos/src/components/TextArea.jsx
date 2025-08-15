@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./TextArea.css"; // We'll create this CSS file
+import "./TextArea.css";
 
 const TextArea = () => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -21,6 +21,204 @@ const TextArea = () => {
 
     const handleCodeChange = (e) => {
         setCode(e.target.value);
+    };
+
+    // Syntax highlighting function - returns React elements
+    const highlightSyntax = (code) => {
+        const keywords = [
+            "const",
+            "let",
+            "var",
+            "function",
+            "return",
+            "if",
+            "else",
+            "for",
+            "while",
+            "do",
+            "switch",
+            "case",
+            "break",
+            "continue",
+            "try",
+            "catch",
+            "finally",
+            "throw",
+            "new",
+            "this",
+            "typeof",
+            "instanceof",
+            "in",
+            "of",
+            "import",
+            "export",
+            "from",
+            "default",
+            "as",
+            "class",
+            "extends",
+            "constructor",
+            "super",
+            "static",
+            "async",
+            "await",
+            "Promise",
+            "true",
+            "false",
+            "null",
+            "undefined",
+            "void",
+            "delete",
+            "React",
+            "useState",
+            "useEffect",
+            "useContext",
+            "useReducer",
+            "useCallback",
+            "useMemo",
+            "useRef",
+            "Component",
+            "PureComponent",
+            "Fragment",
+            "createElement",
+            "cloneElement",
+            "props",
+            "state",
+            "render",
+            "componentDidMount",
+            "componentDidUpdate",
+            "componentWillUnmount",
+        ];
+
+        const lines = code.split("\n");
+
+        return lines.map((line, lineIndex) => {
+            const tokens = tokenizeLine(line, keywords);
+
+            return (
+                <div key={lineIndex}>
+                    {tokens.map((token, tokenIndex) => {
+                        const { text, type } = token;
+                        const className = `syntax-${type}`;
+
+                        return (
+                            <span key={tokenIndex} className={className}>
+                                {text}
+                            </span>
+                        );
+                    })}
+                    {lineIndex < lines.length - 1 && "\n"}
+                </div>
+            );
+        });
+    };
+
+    // Tokenize a single line of code
+    const tokenizeLine = (line, keywords) => {
+        const tokens = [];
+        let current = "";
+        let i = 0;
+
+        const addToken = (text, type = "text") => {
+            if (text) {
+                tokens.push({ text, type });
+            }
+        };
+
+        const flushCurrent = () => {
+            if (current) {
+                // Check if current token is a keyword
+                if (keywords.includes(current)) {
+                    addToken(current, "keyword");
+                } else if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(current)) {
+                    // Check if it's a function (look ahead for parentheses)
+                    const remainingLine = line.slice(i).trim();
+                    if (remainingLine.startsWith("(")) {
+                        addToken(current, "function");
+                    } else {
+                        addToken(current, "text");
+                    }
+                } else if (/^\d+\.?\d*$/.test(current)) {
+                    addToken(current, "number");
+                } else {
+                    addToken(current, "text");
+                }
+                current = "";
+            }
+        };
+
+        while (i < line.length) {
+            const char = line[i];
+            const nextChar = line[i + 1];
+
+            // Handle comments
+            if (char === "/" && nextChar === "/") {
+                flushCurrent();
+                addToken(line.slice(i), "comment");
+                break;
+            }
+
+            if (char === "/" && nextChar === "*") {
+                flushCurrent();
+                let commentEnd = line.indexOf("*/", i + 2);
+                if (commentEnd === -1) commentEnd = line.length;
+                else commentEnd += 2;
+                addToken(line.slice(i, commentEnd), "comment");
+                i = commentEnd;
+                continue;
+            }
+
+            // Handle strings
+            if (char === '"' || char === "'" || char === "`") {
+                flushCurrent();
+                const quote = char;
+                let stringEnd = i + 1;
+                let escaped = false;
+
+                while (stringEnd < line.length) {
+                    if (escaped) {
+                        escaped = false;
+                    } else if (line[stringEnd] === "\\") {
+                        escaped = true;
+                    } else if (line[stringEnd] === quote) {
+                        stringEnd++;
+                        break;
+                    }
+                    stringEnd++;
+                }
+
+                addToken(line.slice(i, stringEnd), "string");
+                i = stringEnd;
+                continue;
+            }
+
+            // Handle operators and punctuation
+            if (/[+\-*/%=!<>&|^~?:;,.\[\]{}()]/.test(char)) {
+                flushCurrent();
+                addToken(char, "operator");
+                i++;
+                continue;
+            }
+
+            // Handle whitespace
+            if (/\s/.test(char)) {
+                flushCurrent();
+                let whitespace = "";
+                while (i < line.length && /\s/.test(line[i])) {
+                    whitespace += line[i];
+                    i++;
+                }
+                addToken(whitespace, "text");
+                continue;
+            }
+
+            // Build up current token
+            current += char;
+            i++;
+        }
+
+        flushCurrent();
+        return tokens;
     };
 
     // Handle tab key for indentation and auto-completion
@@ -458,6 +656,10 @@ const TextArea = () => {
 
                             {/* Code textarea */}
                             <div className="textarea-container">
+                                {/* Syntax highlighting overlay */}
+                                <div className="syntax-overlay">
+                                    {highlightSyntax(code)}
+                                </div>
                                 <textarea
                                     ref={textareaRef}
                                     value={code}
