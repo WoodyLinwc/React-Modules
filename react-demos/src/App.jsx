@@ -3,6 +3,7 @@ import { Route, Routes, NavLink } from "react-router-dom";
 import Counter from "./pages/Counter";
 import FetchAPI from "./pages/FetchAPI";
 import Home from "./pages/Home";
+import TodoList from "./pages/TodoList";
 import TextArea from "./editor/TextArea";
 
 function App() {
@@ -20,6 +21,9 @@ function App() {
                         <li>
                             <NavLink to="/fetch-api">FetchAPI</NavLink>
                         </li>
+                        <li>
+                            <NavLink to="/todo-list">TodoList</NavLink>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -28,6 +32,7 @@ function App() {
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/counter" element={<Counter />}></Route>
                 <Route path="/fetch-api" element={<FetchAPI />}></Route>
+                <Route path="/todo-list" element={<TodoList />}></Route>
             </Routes>
 
             <TextArea />
