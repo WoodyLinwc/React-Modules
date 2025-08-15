@@ -4,7 +4,7 @@ import "./TextArea.css"; // We'll create this CSS file
 const TextArea = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [code, setCode] = useState("// Start coding here...\n");
-    const [dimensions, setDimensions] = useState({ width: 50, height: 50 });
+    const [dimensions, setDimensions] = useState({ width: 50, height: 90 });
     const [position, setPosition] = useState({ right: 0, bottom: 0 });
     const textareaRef = useRef(null);
     const widgetRef = useRef(null);
