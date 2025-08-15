@@ -20,6 +20,13 @@ const PopupComponent = () => {
                 Hook Fetch
             </button>
 
+            <a
+                href="https://github.com/WoodyLinwc/React-Modules/tree/main/react-demos/src/fetchapi"
+                target="_blank"
+            >
+                GitHub
+            </a>
+
             {activeComponent === "simpleFetch" && <SimpleFetch />}
             {activeComponent === "retryFetch" && <RetryFetch />}
             {activeComponent === "hookFetch" && <HookFetch />}
