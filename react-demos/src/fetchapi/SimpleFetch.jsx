@@ -11,6 +11,7 @@ const SimpleFetch = () => {
         const fetchData = async (url) => {
             setError(null);
             setLoading(true);
+
             try {
                 const res = await fetch(url);
                 if (!res.ok) {

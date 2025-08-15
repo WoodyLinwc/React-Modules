@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import SimpleFetch from "./SimpleFetch";
+import RetryFetch from "./RetryFetch";
+import HookFetch from "./HookFetch";
 
 const PopupComponent = () => {
     const [activeComponent, setActiveComponent] = useState("");
@@ -10,7 +12,17 @@ const PopupComponent = () => {
                 Simple Fetch
             </button>
 
+            <button onClick={() => setActiveComponent("retryFetch")}>
+                Retry Fetch
+            </button>
+
+            <button onClick={() => setActiveComponent("hookFetch")}>
+                Hook Fetch
+            </button>
+
             {activeComponent === "simpleFetch" && <SimpleFetch />}
+            {activeComponent === "retryFetch" && <RetryFetch />}
+            {activeComponent === "hookFetch" && <HookFetch />}
         </div>
     );
 };
