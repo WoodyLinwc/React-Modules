@@ -3,7 +3,7 @@ import { Route, Routes, NavLink } from "react-router-dom";
 import Counter from "./pages/Counter";
 import FetchAPI from "./pages/FetchAPI";
 import Home from "./pages/Home";
-import TextArea from "./components/TextArea";
+import TextArea from "./editor/TextArea";
 
 function App() {
     return (

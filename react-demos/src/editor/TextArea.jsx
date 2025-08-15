@@ -3,7 +3,7 @@ import "./TextArea.css";
 
 const TextArea = () => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [code, setCode] = useState("// Start coding here...\n");
+    const [code, setCode] = useState("");
     const [dimensions, setDimensions] = useState({ width: 50, height: 90 });
     const [position, setPosition] = useState({ right: 0, bottom: 0 });
     const textareaRef = useRef(null);
@@ -13,10 +13,29 @@ const TextArea = () => {
 
     const handleToggle = () => {
         setIsExpanded(!isExpanded);
+        // Focus on textarea when expanding
+        if (!isExpanded) {
+            setTimeout(() => {
+                if (textareaRef.current) {
+                    textareaRef.current.focus();
+                    // Position cursor at the beginning
+                    textareaRef.current.selectionStart = 0;
+                    textareaRef.current.selectionEnd = 0;
+                }
+            }, 100); // Small delay to ensure the component is fully rendered
+        }
     };
 
     const handleClear = () => {
-        setCode("// Start coding here...\n");
+        setCode("");
+        // Focus and position cursor at the beginning after clearing
+        setTimeout(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+                textareaRef.current.selectionStart = 0;
+                textareaRef.current.selectionEnd = 0;
+            }
+        }, 0);
     };
 
     const handleCodeChange = (e) => {
