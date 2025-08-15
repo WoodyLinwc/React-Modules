@@ -1,22 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
+import "./TextArea.css"; // We'll create this CSS file
 
 const TextArea = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [code, setCode] = useState("// Start coding here...\n");
+    const [dimensions, setDimensions] = useState({ width: 50, height: 50 });
+    const [position, setPosition] = useState({ right: 0, bottom: 0 });
     const textareaRef = useRef(null);
-
-    // Auto-resize textarea
-    const adjustTextareaHeight = () => {
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.style.height = "auto";
-            textarea.style.height = textarea.scrollHeight + "px";
-        }
-    };
-
-    useEffect(() => {
-        adjustTextareaHeight();
-    }, [code, isExpanded]);
+    const widgetRef = useRef(null);
+    const isResizing = useRef(false);
+    const isDragging = useRef(false);
 
     const handleToggle = () => {
         setIsExpanded(!isExpanded);
@@ -30,42 +23,345 @@ const TextArea = () => {
         setCode(e.target.value);
     };
 
-    // Handle tab key for indentation
+    // Handle tab key for indentation and auto-completion
     const handleKeyDown = (e) => {
+        const textarea = e.target;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+
+        // Tab key for indentation
         if (e.key === "Tab") {
             e.preventDefault();
-            const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
             const newCode =
                 code.substring(0, start) + "  " + code.substring(end);
             setCode(newCode);
 
-            // Restore cursor position after state update
             setTimeout(() => {
-                e.target.selectionStart = e.target.selectionEnd = start + 2;
+                textarea.selectionStart = textarea.selectionEnd = start + 2;
             }, 0);
+            return;
         }
+
+        // Auto-completion for brackets, parentheses, and braces
+        const pairs = {
+            "(": ")",
+            "[": "]",
+            "{": "}",
+            '"': '"',
+            "'": "'",
+        };
+
+        if (pairs[e.key]) {
+            e.preventDefault();
+            const selectedText = code.substring(start, end);
+            const openChar = e.key;
+            const closeChar = pairs[e.key];
+
+            let newCode;
+            let newCursorPos;
+
+            if (selectedText) {
+                // Wrap selected text
+                newCode =
+                    code.substring(0, start) +
+                    openChar +
+                    selectedText +
+                    closeChar +
+                    code.substring(end);
+                newCursorPos = end + 2;
+            } else {
+                // Insert pair and position cursor between them
+                newCode =
+                    code.substring(0, start) +
+                    openChar +
+                    closeChar +
+                    code.substring(end);
+                newCursorPos = start + 1;
+            }
+
+            setCode(newCode);
+            setTimeout(() => {
+                textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+            }, 0);
+            return;
+        }
+
+        // Handle closing characters - skip if next character is the same
+        if (
+            e.key === ")" ||
+            e.key === "]" ||
+            e.key === "}" ||
+            e.key === '"' ||
+            e.key === "'"
+        ) {
+            const nextChar = code.charAt(start);
+            if (nextChar === e.key) {
+                e.preventDefault();
+                setTimeout(() => {
+                    textarea.selectionStart = textarea.selectionEnd = start + 1;
+                }, 0);
+                return;
+            }
+        }
+
+        // Handle backspace for auto-removal of pairs
+        if (e.key === "Backspace" && start === end) {
+            const prevChar = code.charAt(start - 1);
+            const nextChar = code.charAt(start);
+            const pairToRemove = {
+                "(": ")",
+                "[": "]",
+                "{": "}",
+                '"': '"',
+                "'": "'",
+            };
+
+            if (pairToRemove[prevChar] === nextChar) {
+                e.preventDefault();
+                const newCode =
+                    code.substring(0, start - 1) + code.substring(start + 1);
+                setCode(newCode);
+                setTimeout(() => {
+                    textarea.selectionStart = textarea.selectionEnd = start - 1;
+                }, 0);
+                return;
+            }
+        }
+
+        // Handle Enter key for auto-indentation in braces
+        if (e.key === "Enter") {
+            const prevChar = code.charAt(start - 1);
+            const nextChar = code.charAt(start);
+
+            if (prevChar === "{" && nextChar === "}") {
+                e.preventDefault();
+
+                // Get current line indentation
+                const lineStart = code.lastIndexOf("\n", start - 1) + 1;
+                const currentLine = code.substring(lineStart, start - 1);
+                const indent = currentLine.match(/^\s*/)[0];
+
+                const newCode =
+                    code.substring(0, start) +
+                    "\n" +
+                    indent +
+                    "  " +
+                    "\n" +
+                    indent +
+                    code.substring(start);
+
+                setCode(newCode);
+                setTimeout(() => {
+                    textarea.selectionStart = textarea.selectionEnd =
+                        start + indent.length + 3;
+                }, 0);
+                return;
+            }
+        }
+    };
+
+    // Resize functionality
+    const handleMouseDown = (e, direction) => {
+        e.preventDefault();
+        e.stopPropagation();
+        isResizing.current = direction;
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const rect = widgetRef.current.getBoundingClientRect();
+
+        // Store initial position and size
+        const initialLeft = rect.left;
+        const initialTop = rect.top;
+        const initialWidth = rect.width;
+        const initialHeight = rect.height;
+        const initialRight = window.innerWidth - rect.right;
+        const initialBottom = window.innerHeight - rect.bottom;
+
+        const handleMouseMove = (e) => {
+            if (!isResizing.current) return;
+
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+
+            let newWidth = initialWidth;
+            let newHeight = initialHeight;
+            let newRight = initialRight;
+            let newBottom = initialBottom;
+
+            // Handle horizontal resizing
+            if (direction.includes("right")) {
+                // Expanding to the right - only change width
+                newWidth = Math.max(
+                    300,
+                    Math.min(
+                        window.innerWidth - initialLeft - 20,
+                        initialWidth + deltaX
+                    )
+                );
+            }
+            if (direction.includes("left")) {
+                // Expanding to the left - change both width and right position
+                const maxWidth = window.innerWidth - initialRight - 20;
+                newWidth = Math.max(
+                    300,
+                    Math.min(maxWidth, initialWidth - deltaX)
+                );
+                // Adjust right position to keep the right edge fixed
+                newRight = window.innerWidth - (initialLeft + initialWidth);
+            }
+
+            // Handle vertical resizing
+            if (direction.includes("bottom")) {
+                // Expanding downward - only change height
+                newHeight = Math.max(
+                    200,
+                    Math.min(
+                        window.innerHeight - initialTop - 20,
+                        initialHeight + deltaY
+                    )
+                );
+            }
+            if (direction.includes("top")) {
+                // Expanding upward - change both height and bottom position
+                const maxHeight = window.innerHeight - initialBottom - 20;
+                newHeight = Math.max(
+                    200,
+                    Math.min(maxHeight, initialHeight - deltaY)
+                );
+                // Adjust bottom position to keep the bottom edge fixed
+                newBottom = window.innerHeight - (initialTop + initialHeight);
+            }
+
+            // Convert to percentages for state
+            const widthPercent = (newWidth / window.innerWidth) * 100;
+            const heightPercent = (newHeight / window.innerHeight) * 100;
+            const rightPercent = (newRight / window.innerWidth) * 100;
+            const bottomPercent = (newBottom / window.innerHeight) * 100;
+
+            setDimensions({ width: widthPercent, height: heightPercent });
+            setPosition({ right: rightPercent, bottom: bottomPercent });
+        };
+
+        const handleMouseUp = () => {
+            isResizing.current = false;
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+        };
+
+        // Set cursor for the entire document during resize
+        document.body.style.cursor = getResizeCursor(direction);
+        document.body.style.userSelect = "none";
+
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+    };
+
+    const getResizeCursor = (direction) => {
+        const cursors = {
+            top: "n-resize",
+            right: "e-resize",
+            bottom: "s-resize",
+            left: "w-resize",
+            "top left": "nw-resize",
+            "top right": "ne-resize",
+            "bottom left": "sw-resize",
+            "bottom right": "se-resize",
+        };
+        return cursors[direction] || "default";
+    };
+
+    // Drag functionality for moving the editor
+    const handleDragStart = (e) => {
+        // Don't start drag if clicking on buttons
+        if (
+            e.target.tagName === "BUTTON" ||
+            e.target.tagName === "SVG" ||
+            e.target.tagName === "PATH"
+        ) {
+            return;
+        }
+
+        e.preventDefault();
+        isDragging.current = true;
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const rect = widgetRef.current.getBoundingClientRect();
+
+        const startRight = window.innerWidth - rect.right;
+        const startBottom = window.innerHeight - rect.bottom;
+
+        const handleDragMove = (e) => {
+            if (!isDragging.current) return;
+
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+
+            // Calculate new position
+            const newRight = startRight - deltaX;
+            const newBottom = startBottom - deltaY;
+
+            // Constrain to screen boundaries
+            const maxRight = window.innerWidth - rect.width;
+            const maxBottom = window.innerHeight - rect.height;
+
+            const constrainedRight = Math.max(0, Math.min(maxRight, newRight));
+            const constrainedBottom = Math.max(
+                0,
+                Math.min(maxBottom, newBottom)
+            );
+
+            // Convert to percentages
+            const rightPercent = (constrainedRight / window.innerWidth) * 100;
+            const bottomPercent =
+                (constrainedBottom / window.innerHeight) * 100;
+
+            setPosition({ right: rightPercent, bottom: bottomPercent });
+        };
+
+        const handleDragEnd = () => {
+            isDragging.current = false;
+            document.removeEventListener("mousemove", handleDragMove);
+            document.removeEventListener("mouseup", handleDragEnd);
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+        };
+
+        // Set cursor and prevent text selection
+        document.body.style.cursor = "move";
+        document.body.style.userSelect = "none";
+
+        document.addEventListener("mousemove", handleDragMove);
+        document.addEventListener("mouseup", handleDragEnd);
     };
 
     return (
         <>
             {/* Floating Widget */}
             <div
-                className={`fixed transition-all duration-300 ease-in-out z-50 ${
-                    isExpanded
-                        ? "bottom-0 right-0 w-1/2 h-1/2 rounded-tl-lg"
-                        : "bottom-6 right-6 w-16 h-16 rounded-full"
+                ref={widgetRef}
+                className={`floating-widget ${
+                    isExpanded ? "expanded" : "collapsed"
                 }`}
-                style={{
-                    backgroundColor: isExpanded ? "#1e1e1e" : "#4f46e5",
-                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
-                }}
+                style={
+                    isExpanded
+                        ? {
+                              width: `${dimensions.width}%`,
+                              height: `${dimensions.height}%`,
+                              right: `${position.right}%`,
+                              bottom: `${position.bottom}%`,
+                          }
+                        : {}
+                }
             >
                 {!isExpanded ? (
                     // Collapsed state - floating button
                     <button
                         onClick={handleToggle}
-                        className="w-full h-full flex items-center justify-center text-white hover:bg-indigo-600 transition-colors rounded-full"
+                        className="floating-button"
                         title="Open Code Editor"
                     >
                         <svg
@@ -79,23 +375,62 @@ const TextArea = () => {
                     </button>
                 ) : (
                     // Expanded state - code editor
-                    <div className="w-full h-full flex flex-col">
+                    <div className="editor-container">
+                        {/* Resize Handles */}
+                        <div
+                            className="resize-handle resize-top"
+                            onMouseDown={(e) => handleMouseDown(e, "top")}
+                        ></div>
+                        <div
+                            className="resize-handle resize-right"
+                            onMouseDown={(e) => handleMouseDown(e, "right")}
+                        ></div>
+                        <div
+                            className="resize-handle resize-bottom"
+                            onMouseDown={(e) => handleMouseDown(e, "bottom")}
+                        ></div>
+                        <div
+                            className="resize-handle resize-left"
+                            onMouseDown={(e) => handleMouseDown(e, "left")}
+                        ></div>
+                        <div
+                            className="resize-handle resize-top-left"
+                            onMouseDown={(e) => handleMouseDown(e, "top left")}
+                        ></div>
+                        <div
+                            className="resize-handle resize-top-right"
+                            onMouseDown={(e) => handleMouseDown(e, "top right")}
+                        ></div>
+                        <div
+                            className="resize-handle resize-bottom-left"
+                            onMouseDown={(e) =>
+                                handleMouseDown(e, "bottom left")
+                            }
+                        ></div>
+                        <div
+                            className="resize-handle resize-bottom-right"
+                            onMouseDown={(e) =>
+                                handleMouseDown(e, "bottom right")
+                            }
+                        ></div>
+
                         {/* Header */}
-                        <div className="flex items-center justify-between p-3 border-b border-gray-600">
-                            <h3 className="text-white font-medium text-sm">
-                                Code Practice
-                            </h3>
-                            <div className="flex gap-2">
+                        <div
+                            className="editor-header"
+                            onMouseDown={handleDragStart}
+                        >
+                            <h3 className="editor-title">Code Practice</h3>
+                            <div className="header-buttons">
                                 <button
                                     onClick={handleClear}
-                                    className="text-gray-300 hover:text-white transition-colors text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded"
+                                    className="clear-button"
                                     title="Clear Code"
                                 >
                                     Clear
                                 </button>
                                 <button
                                     onClick={handleToggle}
-                                    className="text-gray-300 hover:text-white transition-colors"
+                                    className="minimize-button"
                                     title="Minimize"
                                 >
                                     <svg
@@ -111,81 +446,32 @@ const TextArea = () => {
                         </div>
 
                         {/* Code Editor */}
-                        <div className="flex-1 flex">
+                        <div className="editor-content">
                             {/* Line numbers */}
-                            <div className="bg-gray-800 px-3 py-4 border-r border-gray-600">
-                                <div
-                                    className="text-gray-500 font-mono text-sm text-right"
-                                    style={{ lineHeight: "1.5" }}
-                                >
-                                    {code.split("\n").map((_, index) => (
-                                        <div
-                                            key={index}
-                                            style={{ height: "1.5em" }}
-                                        >
-                                            {index + 1}
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="line-numbers">
+                                {code.split("\n").map((_, index) => (
+                                    <div key={index} className="line-number">
+                                        {index + 1}
+                                    </div>
+                                ))}
                             </div>
 
                             {/* Code textarea */}
-                            <div className="flex-1 relative">
+                            <div className="textarea-container">
                                 <textarea
                                     ref={textareaRef}
                                     value={code}
                                     onChange={handleCodeChange}
                                     onKeyDown={handleKeyDown}
-                                    className="w-full h-full p-4 bg-transparent text-gray-100 font-mono text-sm resize-none outline-none"
-                                    style={{
-                                        fontFamily:
-                                            'Consolas, Monaco, "Courier New", monospace',
-                                        lineHeight: "1.5",
-                                        tabSize: 2,
-                                    }}
+                                    className="code-textarea"
                                     placeholder="Start coding here..."
                                     spellCheck={false}
                                 />
-
-                                {/* Code syntax highlighting overlay */}
-                                <div
-                                    className="absolute top-0 left-0 p-4 pointer-events-none text-transparent font-mono text-sm"
-                                    style={{ lineHeight: "1.5" }}
-                                >
-                                    <pre
-                                        style={{
-                                            margin: 0,
-                                            fontFamily: "inherit",
-                                        }}
-                                    >
-                                        <code
-                                            dangerouslySetInnerHTML={{
-                                                __html: code
-                                                    .replace(
-                                                        /\/\/.*$/gm,
-                                                        '<span style="color: #6a9955">$&</span>'
-                                                    )
-                                                    .replace(
-                                                        /(function|const|let|var|if|else|for|while|return|import|export|class|extends)/g,
-                                                        '<span style="color: #569cd6">$1</span>'
-                                                    )
-                                                    .replace(
-                                                        /(['"`])((?:\\.|(?!\1)[^\\])*?)\1/g,
-                                                        '<span style="color: #ce9178">$&</span>'
-                                                    )
-                                                    .replace(
-                                                        /\b(\d+)\b/g,
-                                                        '<span style="color: #b5cea8">$1</span>'
-                                                    ),
-                                            }}
-                                        />
-                                    </pre>
-                                </div>
                             </div>
                         </div>
 
                         {/* Footer with stats */}
-                        <div className="p-2 border-t border-gray-600 text-xs text-gray-400">
+                        <div className="editor-footer">
                             Lines: {code.split("\n").length} | Characters:{" "}
                             {code.length}
                         </div>
@@ -194,12 +480,7 @@ const TextArea = () => {
             </div>
 
             {/* Backdrop when expanded */}
-            {isExpanded && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-20 z-40"
-                    onClick={handleToggle}
-                />
-            )}
+            {isExpanded && <div className="backdrop" onClick={handleToggle} />}
         </>
     );
 };

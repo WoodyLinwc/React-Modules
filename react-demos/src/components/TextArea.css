@@ -1,0 +1,317 @@
+/* Floating Widget Styles */
+.floating-widget {
+    position: fixed;
+    z-index: 50;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.floating-widget.collapsed {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: #4f46e5;
+}
+
+.floating-widget.expanded {
+    bottom: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+    border-top-left-radius: 0.5rem;
+    background-color: #1e1e1e;
+    min-width: 300px;
+    min-height: 200px;
+}
+
+/* Floating Button */
+.floating-button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.floating-button:hover {
+    background-color: #4338ca;
+}
+
+/* Editor Container */
+.editor-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Resize Handles */
+.resize-handle {
+    position: absolute;
+    background-color: transparent;
+    z-index: 10;
+}
+
+/* Edge handles - larger hit areas */
+.resize-top {
+    top: -2px;
+    left: 8px;
+    right: 8px;
+    height: 6px;
+    cursor: n-resize;
+}
+
+.resize-right {
+    top: 8px;
+    right: -2px;
+    bottom: 8px;
+    width: 6px;
+    cursor: e-resize;
+}
+
+.resize-bottom {
+    bottom: -2px;
+    left: 8px;
+    right: 8px;
+    height: 6px;
+    cursor: s-resize;
+}
+
+.resize-left {
+    top: 8px;
+    left: -2px;
+    bottom: 8px;
+    width: 6px;
+    cursor: w-resize;
+}
+
+/* Corner handles - larger and more prominent */
+.resize-top-left {
+    top: -2px;
+    left: -2px;
+    width: 10px;
+    height: 10px;
+    cursor: nw-resize;
+}
+
+.resize-top-right {
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    cursor: ne-resize;
+}
+
+.resize-bottom-left {
+    bottom: -2px;
+    left: -2px;
+    width: 10px;
+    height: 10px;
+    cursor: sw-resize;
+}
+
+.resize-bottom-right {
+    bottom: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    cursor: se-resize;
+    background-image: linear-gradient(
+            -45deg,
+            transparent 0px,
+            transparent 4px,
+            #666 4px,
+            #666 6px,
+            transparent 6px
+        ),
+        linear-gradient(
+            -45deg,
+            transparent 2px,
+            transparent 6px,
+            #666 6px,
+            #666 8px,
+            transparent 8px
+        ),
+        linear-gradient(
+            -45deg,
+            transparent 4px,
+            transparent 8px,
+            #666 8px,
+            #666 10px,
+            transparent 10px
+        );
+}
+
+/* Visual feedback on hover */
+.resize-handle:hover {
+    background-color: rgba(79, 70, 229, 0.2);
+}
+
+.resize-bottom-right:hover {
+    background-color: rgba(79, 70, 229, 0.2);
+    background-image: linear-gradient(
+            -45deg,
+            transparent 0px,
+            transparent 4px,
+            #4f46e5 4px,
+            #4f46e5 6px,
+            transparent 6px
+        ),
+        linear-gradient(
+            -45deg,
+            transparent 2px,
+            transparent 6px,
+            #4f46e5 6px,
+            #4f46e5 8px,
+            transparent 8px
+        ),
+        linear-gradient(
+            -45deg,
+            transparent 4px,
+            transparent 8px,
+            #4f46e5 8px,
+            #4f46e5 10px,
+            transparent 10px
+        );
+}
+
+/* Header */
+.editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-bottom: 1px solid #4b5563;
+    cursor: move;
+    user-select: none;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+}
+
+.editor-header:hover {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+}
+
+.editor-header:active {
+    background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+}
+
+.editor-title {
+    color: white;
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.clear-button {
+    color: #d1d5db;
+    background-color: #374151;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.clear-button:hover {
+    color: white;
+    background-color: #4b5563;
+}
+
+.minimize-button {
+    color: #d1d5db;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.minimize-button:hover {
+    color: white;
+}
+
+/* Editor Content */
+.editor-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Line Numbers */
+.line-numbers {
+    background-color: #1f2937;
+    padding: 1rem 0.5rem 1rem 0.125rem;
+    border-right: 1px solid #4b5563;
+    color: #6b7280;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 0.875rem;
+    text-align: right;
+    line-height: 1.5;
+    min-width: 2rem;
+}
+
+.line-number {
+    height: 1.5em;
+}
+
+/* Textarea Container */
+.textarea-container {
+    flex: 1;
+    position: relative;
+}
+
+.code-textarea {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    background: transparent;
+    color: #f3f4f6;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border: none;
+    outline: none;
+    resize: none;
+    tab-size: 2;
+}
+
+.code-textarea::placeholder {
+    color: #6b7280;
+}
+
+/* Footer */
+.editor-footer {
+    padding: 0.5rem;
+    border-top: 1px solid #4b5563;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* Backdrop */
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 40;
+}
