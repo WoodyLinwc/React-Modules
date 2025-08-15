@@ -5,6 +5,7 @@ import AutoCounter from "./AutoCounter";
 import MaxCounter from "./MaxCounter";
 import Counters from "./Counters";
 import PersistedCounter from "./PersistedCounter";
+import AsyncCounter from "./AsyncCounter";
 
 const PopupComponent = () => {
     const [activeComponent, setActiveComponent] = useState("");
@@ -30,11 +31,16 @@ const PopupComponent = () => {
                 Persisted Counter
             </button>
 
+            <button onClick={() => setActiveComponent("asyncCounter")}>
+                Async Counter
+            </button>
+
             {activeComponent === "simpleCounter" && <SimpleCounter />}
             {activeComponent === "autoCounter" && <AutoCounter />}
             {activeComponent === "maxCounter" && <MaxCounter />}
             {activeComponent === "counters" && <Counters />}
             {activeComponent === "persistedCounter" && <PersistedCounter />}
+            {activeComponent === "asyncCounter" && <AsyncCounter />}
         </div>
     );
 };
