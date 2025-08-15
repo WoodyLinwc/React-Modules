@@ -44,6 +44,12 @@ const PopupComponent = () => {
             <button onClick={() => setActiveComponent("sizeCounter")}>
                 Size Counter
             </button>
+            <a
+                href="https://github.com/WoodyLinwc/React-Modules/tree/main/react-demos/src/counter"
+                target="_blank"
+            >
+                GitHub
+            </a>
 
             {activeComponent === "simpleCounter" && <SimpleCounter />}
             {activeComponent === "autoCounter" && <AutoCounter />}
