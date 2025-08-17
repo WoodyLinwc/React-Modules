@@ -41,8 +41,6 @@ const TodoList = ({ todos, onToggle, onDelete, onEdit }) => {
 
     return (
         <div>
-            <div>Total todos: {todos.length}</div>
-
             <ul>
                 {todos.map((todo) => (
                     <li key={todo.id}>
