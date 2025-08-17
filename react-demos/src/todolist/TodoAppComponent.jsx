@@ -19,22 +19,21 @@ const TodoAppComponent = () => {
     // toggle todo
     const toggleTodo = (id) =>
         setTodos(
-            todos.map((todo) => {
-                todo.id === id ? { ...todo, completed: !todo.completed } : todo;
-            })
+            todos.map((todo) =>
+                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            )
         );
 
     // delete a todo
     const deleteTodo = (id) => setTodos(todos.filter((todo) => todo.id !== id));
 
     // edit a todo
-    const editTodo = (id, newText) => {
+    const editTodo = (id, newText) =>
         setTodos(
-            todos.map((todo) => {
-                todo.id === id ? { ...todo, text: newText.trim() } : todo;
-            })
+            todos.map((todo) =>
+                todo.id === id ? { ...todo, text: newText.trim() } : todo
+            )
         );
-    };
 
     return (
         <div>
