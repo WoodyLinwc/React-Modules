@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import TodoInput from "./TodoInput";
+import TodoList from "./TodoList";
 
 const TodoAppComponent = () => {
     const [todos, setTodos] = useState([]);
@@ -16,22 +17,15 @@ const TodoAppComponent = () => {
     };
 
     // toggle todo
-    const toggleTodo = (id) => {
+    const toggleTodo = (id) =>
         setTodos(
             todos.map((todo) => {
                 todo.id === id ? { ...todo, completed: !todo.completed } : todo;
             })
         );
-    };
 
     // delete a todo
-    const deleteTodo = (id) => {
-        setTodos(
-            todos.filter((todo) => {
-                todo.id !== id;
-            })
-        );
-    };
+    const deleteTodo = (id) => setTodos(todos.filter((todo) => todo.id !== id));
 
     // edit a todo
     const editTodo = (id, newText) => {
@@ -44,12 +38,19 @@ const TodoAppComponent = () => {
 
     return (
         <div>
-            <h2>Todo List</h2>
-
-            <div>Total todos: {todos.length}</div>
+            <h2>Todo List App</h2>
 
             <div>
                 <TodoInput onAdd={addTodos} />
+            </div>
+
+            <div>
+                <TodoList
+                    todos={todos}
+                    onToggle={toggleTodo}
+                    onDelete={deleteTodo}
+                    onEdit={editTodo}
+                />
             </div>
         </div>
     );
