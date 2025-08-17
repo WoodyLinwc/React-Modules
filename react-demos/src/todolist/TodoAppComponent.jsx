@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import TodoInput from "./TodoInput";
 
-const TodoListComponent = () => {
+const TodoAppComponent = () => {
     const [todos, setTodos] = useState([]);
 
     // add a todo
@@ -46,8 +47,12 @@ const TodoListComponent = () => {
             <h2>Todo List</h2>
 
             <div>Total todos: {todos.length}</div>
+
+            <div>
+                <TodoInput onAdd={addTodos} />
+            </div>
         </div>
     );
 };
 
-export default TodoListComponent;
+export default TodoAppComponent;
