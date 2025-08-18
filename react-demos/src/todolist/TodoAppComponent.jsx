@@ -39,7 +39,10 @@ const TodoAppComponent = () => {
     return (
         <div>
             <h2>Todo List App</h2>
-            <a href="" target="_blank">
+            <a
+                href="https://github.com/WoodyLinwc/React-Modules/blob/main/react-demos/src/todolist/Note.txt"
+                target="_blank"
+            >
                 Notes
             </a>
 
