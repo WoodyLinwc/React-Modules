@@ -65,7 +65,7 @@ const PopupComponent = () => {
             {activeComponent === "asyncCounter" && <AsyncCounter />}
             {activeComponent === "throttleCounter" && <ThrottleCounter />}
             {activeComponent === "sizeCounter" && <SizeCounter />}
-            {activeComponent === "timerCounter" && <TimerCounter />}
+            {activeComponent === "timerCounter" && <TimerCounter start={5} />}
         </div>
     );
 };

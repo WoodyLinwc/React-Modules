@@ -8,7 +8,7 @@ const ImageCarousel = () => {
     const cats = [cat1, cat2, cat3];
     const [currentCat, setCurrentCat] = useState(cat1);
 
-    const [currentIndex, setCurrenIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [auto, setAuto] = useState(false);
 
     const randomCat = () => {
@@ -24,26 +24,24 @@ const ImageCarousel = () => {
     };
 
     const left = () => {
-        setCurrenIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+        setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
 
     const right = () => {
-        setCurrenIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+        setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
 
     useEffect(() => {
         if (!auto) return;
 
-        let interval;
-
-        interval = setInterval(() => {
-            left();
+        const interval = setInterval(() => {
+            right();
         }, 2000);
 
         return () => {
-            clearTimeout(interval);
+            clearInterval(interval);
         };
-    });
+    }, [auto]);
 
     return (
         <div>
