@@ -1,0 +1,39 @@
+Todo App Structure
+
+TodoApp 
+    todos,setTodos useState([])
+
+    addTodo(text)   toggleTodo(id)  deleteTodo(id)   editTodo(id, newText)
+
+    return
+        name
+
+        <TodoInput onAdd={addTodo}/>
+
+        <TodoList   todos={todos} 
+                    onToggle={toggleTodo}
+                    onDelete={deleteTodo}
+                    onEdit={editTodo}>
+<TodoInput/>
+    inputValue, useState("")
+
+    handleSubmit(e)
+        onAdd(inputValue)
+
+    return
+        <form onSubmit={handleSubmit}>
+        <input>
+        <button type="submit">
+
+<TodoList>
+    editingId useState(null)
+    editingText useState("")
+
+    startEditing(todo)  saveEdit(id) cancelEdit()   handleKeyDown(e, id )
+
+    return
+        <ul>
+            todos.map
+                <li>
+
+

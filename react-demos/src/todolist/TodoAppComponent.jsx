@@ -39,6 +39,9 @@ const TodoAppComponent = () => {
     return (
         <div>
             <h2>Todo List App</h2>
+            <a href="" target="_blank">
+                Notes
+            </a>
 
             <div>
                 <TodoInput onAdd={addTodos} />
