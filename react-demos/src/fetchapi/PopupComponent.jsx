@@ -3,7 +3,7 @@ import SimpleFetch from "./SimpleFetch";
 import RetryFetch from "./RetryFetch";
 import HookFetch from "./HookFetch";
 import ImageCarousel from "./ImageCarousel";
-import LoopJSON from "./LoopJson";
+import LoopJSON from "./LoopJSON";
 
 const PopupComponent = () => {
     const [activeComponent, setActiveComponent] = useState("");
