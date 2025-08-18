@@ -8,6 +8,7 @@ import PersistedCounter from "./PersistedCounter";
 import AsyncCounter from "./AsyncCounter";
 import ThrottleCounter from "./ThrottleCounter";
 import SizeCounter from "./SizeCounter";
+import TimerCounter from "./TimerCounter";
 
 const PopupComponent = () => {
     const [activeComponent, setActiveComponent] = useState("");
@@ -44,6 +45,11 @@ const PopupComponent = () => {
             <button onClick={() => setActiveComponent("sizeCounter")}>
                 Size Counter
             </button>
+
+            <button onClick={() => setActiveComponent("timerCounter")}>
+                Timer Counter
+            </button>
+
             <a
                 href="https://github.com/WoodyLinwc/React-Modules/tree/main/react-demos/src/counter"
                 target="_blank"
@@ -59,6 +65,7 @@ const PopupComponent = () => {
             {activeComponent === "asyncCounter" && <AsyncCounter />}
             {activeComponent === "throttleCounter" && <ThrottleCounter />}
             {activeComponent === "sizeCounter" && <SizeCounter />}
+            {activeComponent === "timerCounter" && <TimerCounter />}
         </div>
     );
 };
