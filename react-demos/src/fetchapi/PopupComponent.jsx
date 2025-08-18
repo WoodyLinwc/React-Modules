@@ -3,6 +3,7 @@ import SimpleFetch from "./SimpleFetch";
 import RetryFetch from "./RetryFetch";
 import HookFetch from "./HookFetch";
 import ImageCarousel from "./ImageCarousel";
+import LoopJSON from "./LoopJson";
 
 const PopupComponent = () => {
     const [activeComponent, setActiveComponent] = useState("");
@@ -25,6 +26,10 @@ const PopupComponent = () => {
                 Image Fetch
             </button>
 
+            <button onClick={() => setActiveComponent("loopJSON")}>
+                Loop JSON
+            </button>
+
             <a
                 href="https://github.com/WoodyLinwc/React-Modules/tree/main/react-demos/src/fetchapi"
                 target="_blank"
@@ -36,6 +41,7 @@ const PopupComponent = () => {
             {activeComponent === "retryFetch" && <RetryFetch />}
             {activeComponent === "hookFetch" && <HookFetch />}
             {activeComponent === "imageFetch" && <ImageCarousel />}
+            {activeComponent === "loopJSON" && <LoopJSON />}
         </div>
     );
 };
