@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SimpleFetch from "./SimpleFetch";
 import RetryFetch from "./RetryFetch";
 import HookFetch from "./HookFetch";
+import ImageCarousel from "./ImageCarousel";
 
 const PopupComponent = () => {
     const [activeComponent, setActiveComponent] = useState("");
@@ -20,6 +21,10 @@ const PopupComponent = () => {
                 Hook Fetch
             </button>
 
+            <button onClick={() => setActiveComponent("imageFetch")}>
+                Image Fetch
+            </button>
+
             <a
                 href="https://github.com/WoodyLinwc/React-Modules/tree/main/react-demos/src/fetchapi"
                 target="_blank"
@@ -30,6 +35,7 @@ const PopupComponent = () => {
             {activeComponent === "simpleFetch" && <SimpleFetch />}
             {activeComponent === "retryFetch" && <RetryFetch />}
             {activeComponent === "hookFetch" && <HookFetch />}
+            {activeComponent === "imageFetch" && <ImageCarousel />}
         </div>
     );
 };

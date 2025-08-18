@@ -35,7 +35,7 @@ const SimpleFetch = () => {
 
     return (
         <div>
-            <h2>Simple Fetching</h2>
+            <h2>Simple Fetch</h2>
 
             <table>
                 <thead>
